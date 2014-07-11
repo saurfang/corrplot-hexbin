@@ -4,3 +4,4 @@ dist
 .idea
 .sass-cache
 .tmp
+.grunt

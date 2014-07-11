@@ -43,13 +43,16 @@ angular.module('heatmapApp')
 
             $scope.format = d3.format('%.2f');
 
-            var quantize = d3.scale.quantile().domain([-1, 1]).range(d3.range(11));
+            var color = d3.scale.linear()
+                    .domain(d3.range(-1, 1, .2))
+                    .range(colorbrewer.RdYlGn[11])
+                    .interpolate(d3.interpolateLab);
 
             $scope.color = function(row, feature){
                 if(row.trait === feature){
                    return 'white';
                 }else{
-                   return colorbrewer.RdYlGn[11][quantize(row[feature])];
+                   return color(row[feature]);
                 }
             };
 

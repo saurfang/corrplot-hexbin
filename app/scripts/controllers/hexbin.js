@@ -30,6 +30,7 @@ angular.module('heatmapApp')
                     .data('slider');
             };
 
+            //Source: http://bl.ocks.org/nowherenearithaca/4449376
             $scope.initLegend = function () {
                 var margin = {top: 5, right: 20, bottom: 15, left: 5},
                     width = $('#legend').width(),
@@ -50,13 +51,7 @@ angular.module('heatmapApp')
                     .attr('x2', '100%')
                     .attr('y1', '0%')
                     .attr('y2', '0%');
-                // x1=0, x2=100%, y1=y2 results in a horizontal gradient
-                // it would have been vertical if x1=x2, y1=0, y2=100%
-                // See
-                //      http://www.w3.org/TR/SVG/pservers.html#LinearGradients
-                // for more details and fancier things you can do
-                //create the bar for the legend to go into
-                // the 'fill' attribute hooks the gradient up to this rect
+
                 svgForLegendStuff.append('rect')
                     .attr('fill', 'url(#' + idGradient + ')')
                     .attr('x', margin.left)
@@ -81,7 +76,6 @@ angular.module('heatmapApp')
                     .attr('y', height)
                     .text(numberHues + '+');
 
-                //now the d3 magic (imo) ...
                 var stops = d3.select('#' + idGradient).selectAll('stop')
                     .data(d3.range(numberHues).map(function (i) {
                         return {
