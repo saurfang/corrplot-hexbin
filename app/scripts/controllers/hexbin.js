@@ -30,11 +30,12 @@ angular.module('heatmapApp')
                     .data('slider');
             };
 
+            var maxHue;
             //Source: http://bl.ocks.org/nowherenearithaca/4449376
             $scope.initLegend = function () {
                 var margin = {top: 5, right: 20, bottom: 15, left: 5},
                     width = $('#legend').width(),
-                    height = 45;
+                    height = 35;
 
                 var idGradient = 'legendGradient';
 
@@ -59,7 +60,7 @@ angular.module('heatmapApp')
                     .attr('width', width - margin.left - margin.right)
                     .attr('height', height - margin.top - margin.bottom)
                     .style('stroke', 'black')
-                    .style('stroke-width', '1px');
+                    .style('stroke-width', '0.5px');
 
                 //add text on either side of the bar
                 svgForLegendStuff.append('text')
@@ -69,12 +70,11 @@ angular.module('heatmapApp')
                     .attr('y', height)
                     .text('0');
 
-                svgForLegendStuff.append('text')
+                maxHue = svgForLegendStuff.append('text')
                     .attr('class', 'legendText')
                     .attr('text-anchor', 'middle')
                     .attr('x', width - margin.right)
-                    .attr('y', height)
-                    .text(numberHues + '+');
+                    .attr('y', height);
 
                 var stops = d3.select('#' + idGradient).selectAll('stop')
                     .data(d3.range(numberHues).map(function (i) {
@@ -94,17 +94,10 @@ angular.module('heatmapApp')
             };
 
             $scope.initHexbin = function () {
-                var margin = {top: 20, right: 20, bottom: 40, left: 50},
+                var margin = {top: 10, right: 20, bottom: 60, left: 50},
                     width = $('#hexbin').width() - margin.left - margin.right,
-                    height = 500 - margin.top - margin.bottom;
-
-                var points = [];
-
-                var tot = function (d) {
-                    return d.reduce(function (acc, cur) {
-                        return acc + cur[2];
-                    }, 0);
-                };
+                    height = $('#hexbin').width() - margin.top - margin.bottom,
+                    points = [];
 
                 var hexbin = d3.hexbin()
                     .x(function (d) {
@@ -144,29 +137,16 @@ angular.module('heatmapApp')
                 };
 
                 var zoomed = function () {
-                    //console.log(zoom.scale() + ',' + zoom.center() + ',' + zoom.translate());
-                    //console.log(d3.event.scale + ',' + d3.event.translate);
                     container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
                     svg.select(".x.axis").call(xAxis);
                     svg.select(".y.axis").call(yAxis);
-
-                    //hexbin = hexbin.radius($scope.binSize * zoom.scale());
-                    //redraw();
                 }
 
                 var zoom = d3.behavior.zoom()
                     .scaleExtent([1, Infinity])
                     .x(x)
                     .y(y)
-                    .on("zoom.in", function() {
-                        //console.log(d3.event.translate + d3.event.scale)
-                        //circle.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
-                    })
                     .on("zoom", zoomed);
-
-                var drag = d3.behavior.drag()
-                    .origin(function(d) { return d; })
-                    .on("dragstart", function(d) { d3.event.sourceEvent.stopPropagation(); });
 
                 var tooltip = d3.select("#hexbin").append("div")
                     .attr("class", "d3tip hidden");
@@ -184,7 +164,7 @@ angular.module('heatmapApp')
                     .attr("width", width)
                     .attr("height", height);
 
-                //Use svg to clip to support drag without redraw
+                //Use svg to clip to support pan without redraw
                 var container = svg.append("svg")
                     .attr("width", width)
                     .attr("height", height)
@@ -216,7 +196,22 @@ angular.module('heatmapApp')
                     .attr('transform', 'rotate(-90)');
 
                 var redraw = function () {
-                    hexagon = hexagon.data(hexbin(points), function (d) {
+                    var bins = hexbin(points);
+                    if(bins.length){
+                        var maxCount = 0;
+                        bins.forEach(function (d){
+                            var count = d.reduce(function (acc, cur) {
+                                return acc + cur[2];
+                            }, 0);
+                            if(count > maxCount){
+                                maxCount = count;
+                            }
+                            d.total = count;
+                        });
+                        color = color.domain([0, maxCount]);
+                        maxHue.text(maxCount);
+                    }
+                    hexagon = hexagon.data(bins, function (d) {
                         return d.i + ',' + d.j;
                     });
 
@@ -233,7 +228,7 @@ angular.module('heatmapApp')
 
                             tooltip
                                 .classed("hidden", false)
-                                .attr("style", "left:" + (mouse[0] + 25) + "px;top:" + (mouse[1] - 20) + "px")
+                                .attr("style", "left:" + (mouse[0] + 25) + "px;top:" + (mouse[1] - 30) + "px")
                                 .html(tip(d))
                         })
                         .on("mouseout", function (d, i) {
@@ -248,11 +243,11 @@ angular.module('heatmapApp')
                         })
                         .attr('d', hexbin.hexagon())
                         .style('fill', function (d) {
-                            return color(tot(d));
+                            return color(d.total);
                         });
                 };
 
-                var redrawAxis = function (traits) {
+                var redrawAxis = function (vars) {
                     x.domain(d3.extent(points, function (d) {
                         return d[0];
                     }));
@@ -264,15 +259,15 @@ angular.module('heatmapApp')
 
                     var t = svg.transition().duration(500);
                     t.select('.x.axis').call(xAxis);
-                    t.select('.x.label').text(traits[0]);
+                    t.select('.x.label').text(vars[0]);
 
                     t.select('.y.axis').call(yAxis);
-                    t.select('.y.label').text(traits[1]);
+                    t.select('.y.label').text(vars[1]);
                 };
 
                 $scope.$onRootScope('hexbinChanged', function () {
                     points = $rootScope.selectedHexbins;
-                    redrawAxis($rootScope.selectedTraits);
+                    redrawAxis($rootScope.selectedVars);
                     redraw();
                 });
 

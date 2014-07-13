@@ -10,12 +10,11 @@
 angular.module('heatmapApp')
     .factory('dataFactory', ['$http', function ($http) {
         var factory = {};
-        var flowers = $http.get('assets/flowers.json').then(function (resp) {
-            return resp.data;
-        });
 
-        factory.flowers = function(){
-            return flowers;
+        factory.fetch = function (dataset) {
+            return $http.get('assets/' + dataset + '.csv').then(function (resp) {
+                return resp.data;
+            });
         };
 
         factory.getPearsonsCorrelation = function (x, y) {

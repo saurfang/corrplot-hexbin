@@ -13,7 +13,7 @@ angular.module('heatmapApp')
             $scope.corCol = {};
             $scope.corRow = {};
             var adjustStyle = function() {
-                var side = $('#correlation').width() / ($scope.traits.length + 1);
+                var side = $('#correlation').width() / ($scope.vars.length + 1);
                 $scope.corCol = {width: side + 'px'};
                 $scope.corRow = {height: side + 'px'};
             };
@@ -23,22 +23,21 @@ angular.module('heatmapApp')
                 return $scope.$apply();
             });
 
-            //FIXME: pretty sure this is wrong
-            $scope.traits = [];
+            $scope.vars = [];
             var values = [];
             $scope.correlations = [];
-            dataFactory.flowers().then(function (response) {
-                $scope.traits = response.traits;
-                values = response.values;
+            var parseCSV = function(response) {
+                values = d3.csv.parse(response);
+                $scope.vars = Object.keys(values[0]);
 
                 //Compute correlations
                 var correlations = [];
-                $scope.traits.forEach(function(traitX){
-                    var correlation = {trait: traitX};
-                    var x = values.map(function(d){ return d[traitX]; });
-                    $scope.traits.forEach(function(traitY){
-                       var y = values.map(function(d){ return d[traitY]; });
-                        correlation[traitY] = dataFactory.getPearsonsCorrelation(x, y);
+                $scope.vars.forEach(function(varX){
+                    var correlation = {var: varX};
+                    var x = values.map(function(d){ return +d[varX]; });
+                    $scope.vars.forEach(function(varY){
+                        var y = values.map(function(d){ return +d[varY]; });
+                        correlation[varY] = dataFactory.getPearsonsCorrelation(x, y);
                     });
                     correlations.push(correlation);
                 });
@@ -46,17 +45,34 @@ angular.module('heatmapApp')
                 $scope.tableParams.reload();
 
                 adjustStyle();
+            };
+            $scope.dataset = 'iris';
+            $scope.$watch('dataset', function(dataset){
+                dataFactory.fetch(dataset).then(parseCSV);
             });
 
-            $scope.updateHexbin = function(traitX, traitY){
-              $rootScope.selectedTraits = [traitX, traitY];
-              $rootScope.selectedHexbins = values.map(function(d){
-                  return [d[traitX], d[traitY], 1];
-              })
-              $rootScope.$emit('hexbinChanged');
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                parseCSV(reader.result);
+            }
+
+            $scope.uploadFile = function(files) {
+                reader.readAsText(files[0]);
+            };
+
+            $scope.updateHexbin = function(rowX, varY){
+                if(isFinite(rowX[varY])){
+                    var varX = rowX.var;
+                    $rootScope.selectedVars = [varX, varY];
+                    $rootScope.selectedHexbins = values.map(function(d){
+                        return [+d[varX], +d[varY], 1];
+                    })
+                    $rootScope.$emit('hexbinChanged');
+                }
             };
 
             $scope.format = d3.format('%.2f');
+            $scope.isFinite = isFinite;
 
             var color = d3.scale.linear()
                     .domain(d3.range(-1, 1, .2))
@@ -64,7 +80,7 @@ angular.module('heatmapApp')
                     .interpolate(d3.interpolateLab);
 
             $scope.color = function(row, feature){
-                if(row.trait === feature){
+                if(row.var === feature || isNaN(row[feature])){
                    return 'white';
                 }else{
                    return color(row[feature]);
@@ -73,15 +89,12 @@ angular.module('heatmapApp')
 
             $scope.tableParams = new ngTableParams({
                 page: 1,            // show first page
-                count: $scope.traits.length           // count per page
+                count: $scope.vars.length           // count per page
             }, {
                 counts: [],         // hide page counts control
-                total: $scope.traits.length, // length of data
+                total: $scope.vars.length, // length of data
                 getData: function ($defer, params) {
-                    // use build-in angular filter
-                    var orderedData = $scope.correlations;
-
-                    $defer.resolve(orderedData);
+                    $defer.resolve($scope.correlations);
                 }
             });
         }]);

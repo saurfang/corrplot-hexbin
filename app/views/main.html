@@ -1,23 +1,41 @@
 <div class="row">
-    <div class="col-md-7">
-        <table id="correlation" ng-table="tableParams" class="table correlationTable" data-ng-controller="correlationCtrl">
+    <div class="col-md-7" data-ng-controller="correlationCtrl">
+        <div class="row">
+            <div class="col-md-3">
+                <label>Select DataSet</label>
+                <select class="form-control" ng-model="dataset">
+                    <option>iris</option>
+                    <option>airquality</option>
+                    <option>diamonds</option>
+                </select>
+            </div>
+
+            <div class="col-md-9">
+                <label>Upload Your Own</label>
+                <input type="file" id="inputFile" accept="text/csv"
+                       onchange="angular.element(this).scope().uploadFile(this.files)"/>
+            </div>
+        </div>
+
+
+        <table id="correlation" ng-table="tableParams" class="table correlationTable">
             <thead>
             <tr>
                 <td ng-style="corCol"></td>
-                <td ng-style="corCol" ng-repeat="feature in traits">{{feature}}</td>
+                <td ng-style="corCol" ng-repeat="var in vars">{{var}}</td>
             </tr>
             </thead>
 
             <tbody>
             <tr ng-repeat="row in $data" ng-style="corRow">
                 <td>
-                    {{row.trait}}
+                    {{row.var}}
                 </td>
-                <td ng-repeat="feature in traits" class="correlation"
-                    id="corr-{{row.trait}}-{{feature}}"
-                    ng-click="updateHexbin(row.trait, feature)"
-                    bgcolor="{{color(row, feature)}}">
-                    <span ng-if="feature !== row.trait">{{format(row[feature])}}</span>
+                <td ng-repeat="var in vars" ng-class="{correlation : isFinite(row[var])}"
+                    id="corr-{{row.var}}-{{var}}"
+                    ng-click="updateHexbin(row, var)"
+                    bgcolor="{{color(row, var)}}">
+                    <span ng-if="var !== row.var">{{format(row[var])}}</span>
                 </td>
             </tr>
             </tbody>
