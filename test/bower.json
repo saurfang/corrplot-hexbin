@@ -1,5 +1,5 @@
 {
-  "name": "ngHexbin",
+  "name": "angular-d3-hexbin",
   "version": "0.0.0",
   "dependencies": {
     "angular": "1.2.16",

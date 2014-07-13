@@ -42,7 +42,7 @@
         </table>
     </div>
 
-    <div class="col-md-5" data-ng-controller="hexbinCtrl">
+    <div class="col-md-5" data-ng-controller="hexbinCtrl" ng-hide="showHistogram">
         <div class="col-md-6">
             <label for="binSize">Hexbin Size</label>
             <input id="binSize" type="text"
@@ -52,6 +52,10 @@
             <b>Legend</b>
         </div>
         <div id="hexbin" class="col-md-12" data-ng-init="initHexbin()">
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div id="histogram" class="col-md-12" ng-show="showHistogram">
         </div>
     </div>
 </div>
