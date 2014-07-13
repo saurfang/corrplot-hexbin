@@ -8,8 +8,21 @@
  * Controller of the heatmapApp
  */
 angular.module('heatmapApp')
-    .controller('correlationCtrl', ['$rootScope', '$scope', 'dataFactory', 'ngTableParams',
-        function ($rootScope, $scope, dataFactory, ngTableParams) {
+    .controller('correlationCtrl', ['$rootScope', '$scope', 'dataFactory', 'ngTableParams', '$window',
+        function ($rootScope, $scope, dataFactory, ngTableParams, $window) {
+            $scope.corCol = {};
+            $scope.corRow = {};
+            var adjustStyle = function() {
+                var side = $('#correlation').width() / ($scope.traits.length + 1);
+                $scope.corCol = {width: side + 'px'};
+                $scope.corRow = {height: side + 'px'};
+            };
+
+            angular.element($window).bind('resize', function() {
+                adjustStyle();
+                return $scope.$apply();
+            });
+
             //FIXME: pretty sure this is wrong
             $scope.traits = [];
             var values = [];
@@ -31,6 +44,8 @@ angular.module('heatmapApp')
                 });
                 $scope.correlations = correlations;
                 $scope.tableParams.reload();
+
+                adjustStyle();
             });
 
             $scope.updateHexbin = function(traitX, traitY){
