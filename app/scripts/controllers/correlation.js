@@ -46,7 +46,7 @@ angular.module('heatmapApp')
 
                 adjustStyle();
             };
-            $scope.dataset = 'iris';
+            $scope.dataset = 'iris.csv';
             $scope.$watch('dataset', function(dataset){
                 dataFactory.fetch(dataset).then(parseCSV);
             });

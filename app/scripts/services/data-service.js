@@ -12,7 +12,7 @@ angular.module('heatmapApp')
         var factory = {};
 
         factory.fetch = function (dataset) {
-            return $http.get('assets/' + dataset + '.csv').then(function (resp) {
+            return $http.get('assets/' + dataset).then(function (resp) {
                 return resp.data;
             });
         };
