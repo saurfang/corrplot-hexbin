@@ -16,7 +16,6 @@
     "ng-table": "~0.3.3",
     "d3": "~3.4.9",
     "d3-plugins": "*",
-    "d3-tip": "~0.6.4",
     "colorbrewer": "~1.0.0",
     "seiyria-bootstrap-slider": "~3.1.0"
   },

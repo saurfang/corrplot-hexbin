@@ -18,17 +18,6 @@ angular.module('heatmapApp')
             return flowers;
         };
 
-        factory.points = function (width, height) {
-            var randomX = d3.random.normal(width / 2, 2),
-                randomY = d3.random.normal(height / 2, 2),
-                randomValue = function () {
-                    return Math.ceil(Math.random() * 5);
-                };
-            return d3.range(2000).map(function () {
-                return [randomX(), randomY(), randomValue()];
-            });
-        };
-
         factory.getPearsonsCorrelation = function (x, y) {
             var shortestArrayLength = 0;
             if (x.length == y.length) {

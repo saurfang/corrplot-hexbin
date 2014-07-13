@@ -10,11 +10,11 @@
 angular.module('heatmapApp')
     .controller('hexbinCtrl', ['$rootScope', '$scope',
         function ($rootScope, $scope) {
-            $scope.binSize = 20;
+            $scope.binSize = 10;
 
             var numberHues = 20;
             var color = d3.scale.linear()
-                .domain([0, 15])
+                .domain([0, numberHues])
                 .range(['white', 'steelblue'])
                 .interpolate(d3.interpolateLab);
 
@@ -98,7 +98,7 @@ angular.module('heatmapApp')
                     width = $('#hexbin').width() - margin.left - margin.right,
                     height = 500 - margin.top - margin.bottom;
 
-                var points = []; //dataFactory.points(0, 0);
+                var points = [];
 
                 var tot = function (d) {
                     return d.reduce(function (acc, cur) {
@@ -132,54 +132,65 @@ angular.module('heatmapApp')
                     .orient('left')
                     .tickSize(6, -width);
 
+                var tip = function (d) {
+                    var agg = d.reduce(function (acc, cur) {
+                        return [acc[0] + cur[0] * cur[2] , acc[1] + cur[1] * cur[2], acc[2] + cur[2]];
+                    }, [0, 0, 0]);
+
+                    var x = d3.format('.2f')(agg[0] / agg[2]);
+                    var y = d3.format('.2f')(agg[1] / agg[2]);
+
+                    return '<span>(' + x + ',' + y + '): ' + agg[2] + '</span>';
+                };
+
                 var zoomed = function () {
+                    //console.log(zoom.scale() + ',' + zoom.center() + ',' + zoom.translate());
+                    //console.log(d3.event.scale + ',' + d3.event.translate);
+                    container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
                     svg.select(".x.axis").call(xAxis);
                     svg.select(".y.axis").call(yAxis);
-                    redraw();
+
+                    //hexbin = hexbin.radius($scope.binSize * zoom.scale());
+                    //redraw();
                 }
 
                 var zoom = d3.behavior.zoom()
+                    .scaleExtent([1, Infinity])
                     .x(x)
                     .y(y)
+                    .on("zoom.in", function() {
+                        //console.log(d3.event.translate + d3.event.scale)
+                        //circle.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+                    })
                     .on("zoom", zoomed);
 
-                var tip = d3.tip()
-                    .attr('class', 'd3-tip')
-                    .offset([-10, 0])
-                    .html(function (d) {
-                        var agg = d.reduce(function (acc, cur) {
-                            return [acc[0] + cur[0] * cur[2] , acc[1] + cur[1] * cur[2], acc[2] + cur[2]];
-                        }, [0, 0, 0]);
+                var drag = d3.behavior.drag()
+                    .origin(function(d) { return d; })
+                    .on("dragstart", function(d) { d3.event.sourceEvent.stopPropagation(); });
 
-                        var x = d3.format('.2f')(agg[0] / agg[2]);
-                        var y = d3.format('.2f')(agg[1] / agg[2]);
-
-                        return '<span>(' + x + ',' + y + '): ' + agg[2] + '</span>';
-                    });
+                var tooltip = d3.select("#hexbin").append("div")
+                    .attr("class", "d3tip hidden");
 
                 var svg = d3.select('#hexbin').append('svg')
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
                     .append('g')
-                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                    .call(zoom); //TODO: Avoid zoom on Axis
 
+                //Add rect so zoom can be activated in empty space
                 svg.append("rect")
                     .attr("class", "pane")
                     .attr("width", width)
+                    .attr("height", height);
+
+                //Use svg to clip to support drag without redraw
+                var container = svg.append("svg")
+                    .attr("width", width)
                     .attr("height", height)
-                    .call(zoom);
+                    .append('g');
 
-                svg.append('clipPath')
-                    .attr('id', 'clip')
-                    .append('rect')
-                    .attr('class', 'mesh')
-                    .attr('width', width)
-                    .attr('height', height);
-
-                svg.call(tip);
-
-                var hexagon = svg.append('g')
-                    .attr('clip-path', 'url(#clip)')
+                var hexagon = container
                     .selectAll('.hexagon');
 
                 svg.append('g')
@@ -212,10 +223,22 @@ angular.module('heatmapApp')
                     hexagon.exit().remove();
 
                     hexagon.enter().append('path')
-                        .attr('class', 'hexagon')
-                        .on('mouseover', tip.show)
-                        .on('mouseout', tip.hide);
-                        //.call(zoom);
+                        .attr('class', 'hexagon');
+
+                    hexagon
+                        .on("mousemove", function (d, i) {
+                            var mouse = d3.mouse(svg.node()).map(function (d) {
+                                return parseInt(d);
+                            });
+
+                            tooltip
+                                .classed("hidden", false)
+                                .attr("style", "left:" + (mouse[0] + 25) + "px;top:" + (mouse[1] - 20) + "px")
+                                .html(tip(d))
+                        })
+                        .on("mouseout", function (d, i) {
+                            tooltip.classed("hidden", true)
+                        });
 
                     //TODO: Is redrawing every hexagon a significant performance hit when binSize doesn't change?
                     //We can potentially avoid this if we can embed radius in data key properly
@@ -237,6 +260,7 @@ angular.module('heatmapApp')
                         return d[1];
                     }));
                     zoom = zoom.x(x).y(y);
+                    container.attr("transform", null);
 
                     var t = svg.transition().duration(500);
                     t.select('.x.axis').call(xAxis);
