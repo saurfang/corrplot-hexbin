@@ -4,7 +4,7 @@
             <div class="col-md-3">
                 <label>Select DataSet</label>
                 <select class="form-control" ng-model="dataset">
-                    <option value="iris.csv" >iris</option>
+                    <option value="iris.csv">iris</option>
                     <option value="airquality.csv">airquality</option>
                     <option value="diamonds.csv">diamonds</option>
                 </select>
@@ -33,7 +33,7 @@
                 </td>
                 <td ng-repeat="var in vars" ng-class="{correlation : isFinite(row[var])}"
                     id="corr-{{row.var}}-{{var}}"
-                    ng-click="updateHexbin(row, var)"
+                    ng-click="updateSelection(row, var)"
                     bgcolor="{{color(row, var)}}">
                     <span ng-if="var !== row.var">{{format(row[var])}}</span>
                 </td>
@@ -42,20 +42,23 @@
         </table>
     </div>
 
-    <div class="col-md-5" data-ng-controller="hexbinCtrl" ng-hide="showHistogram">
-        <div class="col-md-6">
-            <label for="binSize">Hexbin Size</label>
-            <input id="binSize" type="text"
-                   data-slider-min="1" data-slider-max="100" data-slider-step="1" data-ng-init="initSlider()"/>
+    <div class="col-md-5" data-ng-controller="hexbinCtrl">
+        <div class="col-md-12" ng-hide="showHistogram">
+            <div class="col-md-6">
+                <label for="binSize">Hexbin Size</label>
+                <input id="binSize" type="text"
+                       data-slider-min="1" data-slider-max="100" data-slider-step="1" data-ng-init="initSlider()"/>
+            </div>
+            <div id="legend" class="col-md-6" data-ng-init="initLegend()">
+                <b>Legend</b>
+            </div>
+            <div id="hexbin" class="col-md-12" data-ng-init="initHexbin()">
+            </div>
         </div>
-        <div id="legend" class="col-md-6" data-ng-init="initLegend()">
-            <b>Legend</b>
-        </div>
-        <div id="hexbin" class="col-md-12" data-ng-init="initHexbin()">
-        </div>
-    </div>
-    <div class="col-md-5">
-        <div id="histogram" class="col-md-12" ng-show="showHistogram">
+
+        <div class="col-md-12" ng-show="showHistogram">
+            <div id="histogram" class="col-md-12" data-ng-init="initHistogram()">
+            </div>
         </div>
     </div>
 </div>

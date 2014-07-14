@@ -35,3 +35,12 @@ rect.pane {
   fill: none;
   pointer-events: all;
 }
+
+.bar rect {
+  fill: steelblue;
+  shape-rendering: crispEdges;
+}
+
+.bar text {
+  fill: #fff;
+}

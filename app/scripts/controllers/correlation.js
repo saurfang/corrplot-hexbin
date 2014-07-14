@@ -60,14 +60,22 @@ angular.module('heatmapApp')
                 reader.readAsText(files[0]);
             };
 
-            $scope.updateHexbin = function(rowX, varY){
+            $scope.updateSelection = function(rowX, varY){
                 if(isFinite(rowX[varY])){
                     var varX = rowX.var;
-                    $rootScope.selectedVars = [varX, varY];
-                    $rootScope.selectedHexbins = values.map(function(d){
-                        return [+d[varX], +d[varY], 1];
-                    })
-                    $rootScope.$emit('hexbinChanged');
+                    if(varX === varY){
+                        $rootScope.selectedVar = varX;
+                        $rootScope.selectedValues = values.map(function(d){
+                            return [+d[varX], 1];
+                        })
+                        $rootScope.$emit('histogramChanged');
+                    }else{
+                        $rootScope.selectedVars = [varX, varY];
+                        $rootScope.selectedHexbins = values.map(function(d){
+                            return [+d[varX], +d[varY], 1];
+                        })
+                        $rootScope.$emit('hexbinChanged');
+                    }
                 }
             };
 
