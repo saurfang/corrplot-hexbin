@@ -12,10 +12,14 @@ angular.module('heatmapApp')
         function ($rootScope, $scope, dataFactory, ngTableParams, $window) {
             $scope.corCol = {};
             $scope.corRow = {};
+            $scope.thead = {};
             var adjustStyle = function() {
                 var side = $('#correlation').width() / ($scope.vars.length + 1);
-                $scope.corCol = {width: side + 'px'};
-                $scope.corRow = {height: side + 'px'};
+                $scope.corCol.width =  side + 'px';
+                $scope.corRow.height = side + 'px';
+
+                var lens = $scope.vars.map(function(v){return v.width();});
+                $scope.corCol.height =  (d3.max(lens) + 30) + 'px';
             };
 
             angular.element($window).bind('resize', function() {

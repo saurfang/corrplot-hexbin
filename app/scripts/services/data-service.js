@@ -17,6 +17,7 @@ angular.module('heatmapApp')
             });
         };
 
+        //http://stevegardner.net/2012/06/11/javascript-code-to-calculate-the-pearson-correlation-coefficient/
         factory.getPearsonsCorrelation = function (x, y) {
             var shortestArrayLength = 0;
             if (x.length == y.length) {

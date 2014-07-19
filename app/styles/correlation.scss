@@ -2,6 +2,7 @@
   td {
     text-align: center;
   }
+  > thead > tr > td,
   > tbody > tr > td {
     border-top: none;
     vertical-align: middle;
@@ -11,5 +12,17 @@
     color: black;
     text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
   }
+  .rotate {
+     /* Safari */
+     -webkit-transform: rotate(-90deg);
+     /* Firefox */
+     -moz-transform: rotate(-90deg);
+     /* IE */
+     -ms-transform: rotate(-90deg);
+     /* Opera */
+     -o-transform: rotate(-90deg);
+     /* Internet Explorer */
+     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+   }
 }
 

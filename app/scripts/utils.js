@@ -1,6 +1,7 @@
 (function(){
     'use strict';
 
+    //http://pastebin.com/pZGAL3GE
     if (!String.prototype.width) String.prototype.width = function(font, options) {
         var f, o, w;
 
@@ -27,4 +28,5 @@
 
         return w;
     };
+
 })();

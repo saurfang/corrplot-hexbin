@@ -22,7 +22,7 @@
             <thead>
             <tr>
                 <td ng-style="corCol"></td>
-                <td ng-style="corCol" ng-repeat="var in vars">{{var}}</td>
+                <td ng-style="corCol" ng-repeat="var in vars" class="rotate">{{var}}</td>
             </tr>
             </thead>
 
@@ -49,11 +49,14 @@
                 <input id="binSize" type="text"
                        data-slider-min="1" data-slider-max="100" data-slider-step="1" data-ng-init="initSlider()"/>
             </div>
-            <div id="legend" class="col-md-6" data-ng-init="initLegend()">
+            <ng-hexbin-legend class="col-md-6" color="color">
                 <b>Legend</b>
-            </div>
-            <div id="hexbin" class="col-md-12" data-ng-init="initHexbin()">
-            </div>
+            </ng-hexbin-legend>
+            <ng-hexbin id="hexbin" class="col-md-12"
+                       data="points" count="wtCount" tip="tip"
+                       color="color" radius="binSize"
+                       axis-labels="labs">
+            </ng-hexbin>
         </div>
 
         <div class="col-md-12" ng-show="showHistogram">
