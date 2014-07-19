@@ -6,4 +6,7 @@ to create interactive Hexbin plot for data exploration.
 
 In addition, this also includes an attempt using [ng-table](https://github.com/esvit/ng-table) to create correlation Heatmap.
 
-Eventually, the Hexbin part will be encapsulated into a reusable Angular directive.
+Hexbin plot is available as a Angular directive: [angular-d3-hexbin](https://github.com/saurfang/angular-d3-hexbin)
+
+## License
+MIT
