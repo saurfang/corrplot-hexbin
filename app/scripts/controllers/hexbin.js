@@ -63,8 +63,9 @@ angular.module('heatmapApp')
                 var formatCount = d3.format(',.0f');
 
                 var margin = {top: 10, right: 30, bottom: 30, left: 30},
-                    width = $('#hexbin').width() - margin.left - margin.right,
-                    height = $('#hexbin').width() - margin.top - margin.bottom;
+                    side = $('#hexbin').width(),
+                    width = side - margin.left - margin.right,
+                    height = side - margin.top - margin.bottom;
 
                 var x = d3.scale.linear()
                     .domain([0, 1])
@@ -94,17 +95,13 @@ angular.module('heatmapApp')
                     .call(xAxis);
 
                 var redraw = function () {
-                    values = values.map(function (d) {
-                        return d[0];
-                    })
+                    values = values.map(function (d) { return d[0]; });
                     x = x.domain(d3.extent(values));
                     svg.select('.x.axis').call(xAxis);
                     var data = d3.layout.histogram()
                         .bins(x.ticks(20))(values);
 
-                    y = y.domain([0, d3.max(data, function (d) {
-                        return d.y;
-                    })])
+                    y = y.domain([0, d3.max(data, function (d) { return d.y; })]);
 
                     bar = bar.data(data);
 
