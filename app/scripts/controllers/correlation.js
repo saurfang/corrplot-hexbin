@@ -10,16 +10,21 @@
 angular.module('heatmapApp')
     .controller('correlationCtrl', ['$rootScope', '$scope', 'dataFactory', 'ngTableParams', '$window',
         function ($rootScope, $scope, dataFactory, ngTableParams, $window) {
-            $scope.corCol = {};
-            $scope.corRow = {};
-            $scope.thead = {};
+            $scope.style = {rowHead: {}, row: {}, colHead: {}, table: {}};
+            var showVal = true;
             var adjustStyle = function() {
-                var side = $('#correlation').width() / ($scope.vars.length + 1);
-                $scope.corCol.width =  side + 'px';
-                $scope.corRow.height = side + 'px';
+                var maxWidth = d3.max($scope.vars.map(function(v){return v.width();})) + 16;
+                $scope.style.colHead.height =  maxWidth + 'px';
+                $scope.style.rowHead.width = maxWidth + 'px';
 
-                var lens = $scope.vars.map(function(v){return v.width();});
-                $scope.corCol.height =  (d3.max(lens) + 30) + 'px';
+                var side = ($('#correlation').parent().width() - maxWidth) / $scope.vars.length;
+                $scope.style.colHead.width =  side + 'px';
+                $scope.style.row.height = side + 'px';
+
+                showVal = side > 32;
+
+                //FIXME: This is not ideal because font-size and side have circular dependency
+                $scope.style.table['font-size'] = (side < 14 ? side : 14) + 'px';
             };
 
             angular.element($window).bind('resize', function() {
@@ -37,11 +42,11 @@ angular.module('heatmapApp')
                 //Compute correlations
                 var correlations = [];
                 $scope.vars.forEach(function(varX){
-                    var correlation = {var: varX};
+                    var correlation = {name: varX, values: {}};
                     var x = values.map(function(d){ return +d[varX]; });
                     $scope.vars.forEach(function(varY){
                         var y = values.map(function(d){ return +d[varY]; });
-                        correlation[varY] = dataFactory.getPearsonsCorrelation(x, y);
+                        correlation.values[varY] = dataFactory.getPearsonsCorrelation(x, y);
                     });
                     correlations.push(correlation);
                 });
@@ -65,8 +70,8 @@ angular.module('heatmapApp')
             };
 
             $scope.updateSelection = function(rowX, varY){
-                if(isFinite(rowX[varY])){
-                    var varX = rowX.var;
+                if(isFinite(rowX.values[varY])){
+                    var varX = rowX.name;
                     if(varX === varY){
                         $rootScope.selectedVar = varX;
                         $rootScope.selectedValues = values.map(function(d){
@@ -85,17 +90,32 @@ angular.module('heatmapApp')
 
             $scope.format = d3.format('%.2f');
             $scope.isFinite = isFinite;
+            $scope.tooltip = function(row, name) {
+                if(row.name == name){
+                    return name;
+                }else{
+                    var tooltip = row.name + ' vs. ' + name;
+                    var value = row.values[name];
+                    if(!showVal && isFinite(value)){
+                        tooltip += '<br/>' + $scope.format(value);
+                    }
+                    return tooltip;
+                }
+            };
+            $scope.showVal = function(row, name){
+                return showVal && row.name !== name && isFinite(row.values[name]);
+            };
 
             var color = d3.scale.linear()
                     .domain(d3.range(-1, 1, .2))
                     .range(colorbrewer.RdYlGn[11])
                     .interpolate(d3.interpolateLab);
 
-            $scope.color = function(row, feature){
-                if(row.var === feature || isNaN(row[feature])){
+            $scope.color = function(row, name){
+                if(row.name === name || isNaN(row.values[name])){
                    return 'white';
                 }else{
-                   return color(row[feature]);
+                   return color(row.values[name]);
                 }
             };
 
