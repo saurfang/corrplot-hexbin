@@ -18,7 +18,8 @@
     "d3-plugins": "*",
     "colorbrewer": "~1.0.0",
     "seiyria-bootstrap-slider": "~3.1.0",
-    "angular-d3-hexbin": "*"
+    "angular-d3-hexbin": "*",
+    "angular-bootstrap": "~0.11.0"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",

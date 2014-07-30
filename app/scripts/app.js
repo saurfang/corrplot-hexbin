@@ -17,7 +17,8 @@ angular
         'ngSanitize',
         'ngTouch',
         'ngTable',
-        'angular-d3-hexbin'
+        'angular-d3-hexbin',
+        'ui.bootstrap'
     ])
     .config(function ($provide) {
         $provide.decorator('$rootScope', ['$delegate', function($delegate){
