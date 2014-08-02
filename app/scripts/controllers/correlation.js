@@ -112,7 +112,7 @@ angular.module('heatmapApp')
                     .interpolate(d3.interpolateLab);
 
             $scope.color = function(row, name){
-                if(row.name === name || isNaN(row.values[name])){
+                if(isNaN(row.values[name])){
                    return 'white';
                 }else{
                    return color(row.values[name]);

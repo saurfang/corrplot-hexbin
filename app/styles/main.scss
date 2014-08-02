@@ -72,11 +72,24 @@ body {
 }
 
 /* Histogram */
-.bar rect {
-  fill: steelblue;
-  shape-rendering: crispEdges;
-}
+.histogram{
+  .bar rect {
+    fill: steelblue;
+    shape-rendering: crispEdges;
+  }
 
-.bar text {
-  fill: #fff;
+  .bar text {
+    fill: #fff;
+  }
+
+  .axis {
+    text {
+      font: 10px sans-serif;
+    }
+    path, line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+  }
 }
