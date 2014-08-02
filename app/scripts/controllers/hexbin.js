@@ -10,7 +10,7 @@
 angular.module('heatmapApp')
     .controller('hexbinCtrl', ['$rootScope', '$scope',
         function ($rootScope, $scope) {
-            $scope.binSize = 10;
+            $scope.binSize = 3;
             $scope.points = [];
             $scope.labs = ['', ''];
 
@@ -20,7 +20,7 @@ angular.module('heatmapApp')
                     $scope.$apply();
                 };
 
-                var slider = $('#binSize').slider()
+                var slider = $('#binSize').slider({formater: d3.format('.1f')})
                     .slider('setValue', $scope.binSize)
                     .on('slideStop', binSizeChange)
                     .data('slider');
