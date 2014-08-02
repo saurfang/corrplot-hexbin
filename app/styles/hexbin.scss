@@ -12,7 +12,6 @@
 .hexagon {
   fill: none;
   stroke: #000;
-  stroke-width: .5px;
 }
 
 .hidden {
@@ -36,6 +35,7 @@ rect.pane {
   pointer-events: all;
 }
 
+/* Histogram */
 .bar rect {
   fill: steelblue;
   shape-rendering: crispEdges;

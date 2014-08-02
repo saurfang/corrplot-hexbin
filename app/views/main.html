@@ -46,19 +46,19 @@
 
     <div class="col-md-5" data-ng-controller="hexbinCtrl">
         <div class="col-md-12" ng-hide="showHistogram">
-            <div class="col-md-6">
+            <div class="col-xs-6">
                 <label for="binSize">Hexbin Size</label>
                 <input id="binSize" type="text"
                        data-slider-min="1" data-slider-max="100" data-slider-step="1" data-ng-init="initSlider()"/>
             </div>
-            <ng-hexbin-legend class="col-md-6" color="color">
+            <ng-d3-legend class="col-xs-6" color="color">
                 <b>Legend</b>
-            </ng-hexbin-legend>
-            <ng-hexbin id="hexbin" class="col-md-12"
-                       data="points" count="wtCount" tip="tip"
+            </ng-d3-legend>
+            <ng-d3-hexbin id="hexbin" class="col-md-12"
+                       data="points" weight="wtCount" tip="tip"
                        color="color" radius="binSize"
                        axis-labels="labs" stroke-width="0.5">
-            </ng-hexbin>
+            </ng-d3-hexbin>
         </div>
 
         <div class="col-md-12" ng-show="showHistogram">
