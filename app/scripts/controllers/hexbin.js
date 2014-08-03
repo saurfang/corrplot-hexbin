@@ -14,6 +14,19 @@ angular.module('heatmapApp')
             $scope.points = [];
             $scope.labs = ['', ''];
 
+            var smartFormat = function(x) {
+                if(Math.abs(x) >= 1e3){
+                    return d3.format('2.2s')(x);
+                }else if(Math.abs(x) >= 0.01){
+                    return d3.format('.2f')(x);
+                }else if(Math.abs(x) == 0) {
+                    return '0';
+                }else{
+                    return d3.format('.2e')(x);
+                }
+            }
+            $scope.numericFormat = [smartFormat, smartFormat];
+
             $scope.initSlider = function () {
                 var binSizeChange = function () {
                     $scope.binSize = slider.getValue();
