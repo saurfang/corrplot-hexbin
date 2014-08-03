@@ -91,7 +91,7 @@ angular.module('heatmapApp')
             $scope.format = d3.format('%.2f');
             $scope.isFinite = isFinite;
             $scope.tooltip = function(row, name) {
-                if(row.name == name){
+                if(row.name === name){
                     return name;
                 }else{
                     var tooltip = row.name + ' vs. ' + name;
@@ -106,7 +106,7 @@ angular.module('heatmapApp')
                 return showVal && row.name !== name && isFinite(row.values[name]);
             };
 
-            var color = d3.scale.linear()
+            $scope.colorScale = d3.scale.linear()
                     .domain(d3.range(-1, 1, .2))
                     .range(colorbrewer.RdYlGn[11])
                     .interpolate(d3.interpolateLab);
@@ -115,7 +115,7 @@ angular.module('heatmapApp')
                 if(isNaN(row.values[name])){
                    return 'white';
                 }else{
-                   return color(row.values[name]);
+                   return $scope.colorScale(row.values[name]);
                 }
             };
 

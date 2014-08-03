@@ -42,6 +42,9 @@
             </tr>
             </tbody>
         </table>
+        <ng-d3-legend class="col-md-12" color="colorScale">
+            <b>Legend</b>
+        </ng-d3-legend>
     </div>
 
     <div class="col-md-5" data-ng-controller="hexbinCtrl">
@@ -58,7 +61,7 @@
                           data="points" weight="wtCount" tip="tip"
                           color="color" radius="binSize"
                           axis-labels="labs" stroke-width="0.5"
-                          axis-formats="numericFormat"
+                          axis-formats="numericFormat">
             </ng-d3-hexbin>
         </div>
 

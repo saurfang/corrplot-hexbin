@@ -32,4 +32,8 @@
      /* Internet Explorer */
      filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
    }
+
+  + div .ng-table-pager {
+    display: none;
+  }
 }

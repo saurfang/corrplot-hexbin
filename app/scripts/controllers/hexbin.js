@@ -19,12 +19,12 @@ angular.module('heatmapApp')
                     return d3.format('2.2s')(x);
                 }else if(Math.abs(x) >= 0.01){
                     return d3.format('.2f')(x);
-                }else if(Math.abs(x) == 0) {
+                }else if(Math.abs(x) === 0) {
                     return '0';
                 }else{
                     return d3.format('.2e')(x);
                 }
-            }
+            };
             $scope.numericFormat = [smartFormat, smartFormat];
 
             $scope.initSlider = function () {
