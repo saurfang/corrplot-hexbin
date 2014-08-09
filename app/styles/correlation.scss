@@ -1,17 +1,52 @@
-.correlationTable {
+@import "compass/css3/images";
+
+.correlation-table {
   table-layout: fixed;
-  font-size: 14px;
+  font-size: 12px;
+
+  th.rotate-45 {
+    position: relative;
+
+    > div {
+      position: relative;
+      top: 0px;
+      height: 100%;
+      -ms-transform: skew(-45deg, 0deg);
+      -moz-transform: skew(-45deg, 0deg);
+      -webkit-transform: skew(-45deg, 0deg);
+      -o-transform: skew(-45deg, 0deg);
+      transform: skew(-45deg, 0deg);
+      overflow: hidden;
+      border-left: 1px solid #ddd;
+    }
+
+    span {
+      -ms-transform: skew(45deg, 0deg) rotate(-45deg);
+      -moz-transform: skew(45deg, 0deg) rotate(-45deg);
+      -webkit-transform: skew(45deg, 0deg) rotate(-45deg);
+      -o-transform: skew(45deg, 0deg) rotate(-45deg);
+      transform: skew(45deg, 0deg) rotate(-45deg);
+      position: absolute;
+      display: inline-block;
+      text-align: left;
+    }
+  }
 
   td {
     text-align: center;
+    border: 1px solid #ddd;
   }
 
   > thead > tr > td,
-  > tbody > tr > td {
+  > thead > tr > th,
+  > tbody > tr > td,
+  > tbody > tr > th {
     line-height: 1;
     padding: 0;
-    border-top: none;
     vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+    font-weight: normal;
+    white-space: nowrap; /* display in one line */
   }
 
   .correlation {
@@ -20,20 +55,16 @@
     text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
   }
 
-  .rotate {
-     /* Safari */
-     -webkit-transform: rotate(-90deg);
-     /* Firefox */
-     -moz-transform: rotate(-90deg);
-     /* IE */
-     -ms-transform: rotate(-90deg);
-     /* Opera */
-     -o-transform: rotate(-90deg);
-     /* Internet Explorer */
-     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-   }
+  .na {
+    @include background-image(repeating-linear-gradient(-45deg, transparent 1%, transparent 24%, gray 2%, gray 26%));
+  }
 
   + div .ng-table-pager {
     display: none;
   }
+}
+
+
+.top-buffer {
+  margin-top: 20px;
 }
