@@ -15,8 +15,10 @@ angular.module('heatmapApp')
             $scope.labs = ['', ''];
 
             var smartFormat = function(x) {
-                if(Math.abs(x) >= 1e3){
+                if(Math.abs(x) >= 1e3) {
                     return d3.format('2.2s')(x);
+                }else if(Math.abs(x) > 1){
+                    return d3.format('.1f')(x);
                 }else if(Math.abs(x) >= 0.01){
                     return d3.format('.2f')(x);
                 }else if(Math.abs(x) === 0) {
