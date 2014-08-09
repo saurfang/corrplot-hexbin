@@ -36,14 +36,15 @@
             </thead>
 
             <tbody>
-            <tr ng-repeat="row in $data" ng-style="style.row">
+            <tr ng-repeat="row in correlations" ng-style="style.row">
                 <th ng-style="style.rowHead">
                     {{row.name}}
                 </th>
                 <td ng-repeat="var in vars"
                     ng-class="isFinite(row.values[var]) ? 'correlation' : 'na'"
                     ng-click="updateSelection(row, var)"
-                    bgcolor="{{color(row, var)}}"
+                    ng-attr-bgcolor="{{color(row, var)}}"
+                    tooltip-popup-delay="10"
                     tooltip-html-unsafe="{{tooltip(row, var)}}"
                     tooltip-append-to-body="true">
                     <span ng-if="showVal(row, var)">{{format(row.values[var])}}</span>

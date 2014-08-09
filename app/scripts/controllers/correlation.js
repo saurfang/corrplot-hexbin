@@ -63,7 +63,12 @@ angular.module('heatmapApp')
             var values = [];
             $scope.correlations = [];
             var parseCSV = function (response) {
-                values = d3.csv.parse(response);
+                values = d3.csv.parse(response, function (d) {
+                    Object.keys(d).forEach(function (x) {
+                        d[x] = +d[x];
+                    });
+                    return d;
+                });
                 $scope.vars = Object.keys(values[0]);
 
                 //Compute correlations
@@ -71,17 +76,17 @@ angular.module('heatmapApp')
                 $scope.vars.forEach(function (varX, idX) {
                     var correlation = {name: varX, values: {}};
                     var x = function (d) {
-                        return +d[varX];
+                        return d[varX];
                     };
                     $scope.vars.forEach(function (varY, idY) {
                         var corr = NaN;
                         if (idX === idY) {
-                            if(values.map(x).filter(isFinite).length){
+                            if (values.map(x).filter(isFinite).length) {
                                 corr = 1;
                             }
                         } else if (idX < idY) {
                             var y = function (d) {
-                                return +d[varY];
+                                return d[varY];
                             };
                             corr = dataFactory.getPearsonsCorrelation(values, x, y);
                         } else {
@@ -168,9 +173,6 @@ angular.module('heatmapApp')
                 count: $scope.vars.length           // count per page
             }, {
                 counts: [],         // hide page counts control
-                total: $scope.vars.length, // length of data
-                getData: function ($defer, params) {
-                    $defer.resolve($scope.correlations);
-                }
+                total: $scope.vars.length // length of data
             });
         }]);
